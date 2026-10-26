@@ -1,0 +1,42 @@
+export const districts = [
+    "Coimbatore", "Ariyalur", "Chennai", "Cuddalore", "Dharmapuri", "Dindigul", "Erode",
+    "Kancheepuram", "Kanniyakumari", "Karur", "Krishnagiri", "Madurai", "Nagapattinam",
+    "Namakkal", "Perambalur", "Pudukkottai", "Ramanathapuram", "Salem", "Sivaganga",
+    "Thanjavur", "The Nilgiris", "Theni", "Thiruvallur", "Thiruvarur", "Thoothukkudi",
+    "Tiruchirappalli", "Tirunelveli", "Tiruppur", "Tiruvannamalai", "Vellore", "Villupuram", "Virudhunagar"
+];
+
+export const districtCoords = {
+    "Coimbatore": { lat: 11.0168, lon: 76.9558 },
+    "Ariyalur": { lat: 11.1401, lon: 79.0786 },
+    "Chennai": { lat: 13.0827, lon: 80.2707 },
+    "Cuddalore": { lat: 11.7480, lon: 79.7714 },
+    "Dharmapuri": { lat: 12.1211, lon: 78.1582 },
+    "Dindigul": { lat: 10.3673, lon: 77.9803 },
+    "Erode": { lat: 11.3410, lon: 77.7172 },
+    "Kancheepuram": { lat: 12.8342, lon: 79.7036 },
+    "Kanniyakumari": { lat: 8.0883, lon: 77.5385 },
+    "Karur": { lat: 10.9601, lon: 78.0766 },
+    "Krishnagiri": { lat: 12.5186, lon: 78.2137 },
+    "Madurai": { lat: 9.9252, lon: 78.1198 },
+    "Nagapattinam": { lat: 10.7672, lon: 79.8431 },
+    "Namakkal": { lat: 11.2189, lon: 78.1675 },
+    "Perambalur": { lat: 11.2358, lon: 78.8810 },
+    "Pudukkottai": { lat: 10.3797, lon: 78.8208 },
+    "Ramanathapuram": { lat: 9.3639, lon: 78.8395 },
+    "Salem": { lat: 11.6643, lon: 78.1460 },
+    "Sivaganga": { lat: 9.9651, lon: 78.7204 },
+    "Thanjavur": { lat: 10.7870, lon: 79.1378 },
+    "The Nilgiris": { lat: 11.4102, lon: 76.6950 },
+    "Theni": { lat: 10.0104, lon: 77.4768 },
+    "Thiruvallur": { lat: 13.1432, lon: 79.9044 },
+    "Thiruvarur": { lat: 10.7661, lon: 79.6344 },
+    "Thoothukkudi": { lat: 8.7642, lon: 78.1348 },
+    "Tiruchirappalli": { lat: 10.7905, lon: 78.7047 },
+    "Tirunelveli": { lat: 8.7139, lon: 77.7567 },
+    "Tiruppur": { lat: 11.1085, lon: 77.3411 },
+    "Tiruvannamalai": { lat: 12.2253, lon: 79.0747 },
+    "Vellore": { lat: 12.9165, lon: 79.1325 },
+    "Villupuram": { lat: 11.9401, lon: 79.4861 },
+    "Virudhunagar": { lat: 9.5680, lon: 77.9624 }
+};
