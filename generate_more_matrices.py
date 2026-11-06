@@ -56,7 +56,7 @@ try:
     
     plt.tight_layout()
     plt.savefig('confusion_matrix_normalized.png', dpi=300, bbox_inches='tight')
-    print("Saved: e:\\AGRI-DASH\\confusion_matrix_normalized.png (Great for showing percentage accuracy!)")
+    print("Saved: confusion_matrix_normalized.png (Percentage accuracy matrix)")
     
     # --- PLOT 2: ABSTRACT HEATMAP (No Numbers, High-Tech Legal Look) ---
     plt.figure(figsize=(10, 8))
@@ -75,7 +75,7 @@ try:
         
     plt.tight_layout()
     plt.savefig('confusion_matrix_abstract.png', dpi=300, bbox_inches='tight')
-    print("Saved: e:\\AGRI-DASH\\confusion_matrix_abstract.png (Great for a highly technical 'patent drawing' look!)")
+    print("Saved: confusion_matrix_abstract.png (Technical patent drawing visualization)")
 
 except Exception as e:
     print(f"Error generating plots: {e}")

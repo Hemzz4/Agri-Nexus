@@ -3,7 +3,7 @@ import numpy as np
 from pathlib import Path
 
 # Load dataset
-DATA_PATH = Path('backend/data/Final_Model_Ready_Dataset.csv')
+DATA_PATH = Path(__file__).resolve().parent / 'backend' / 'data' / 'Final_Model_Ready_Dataset.csv'
 df = pd.read_csv(DATA_PATH)
 df['District'] = df['District'].str.lower().str.strip()
 

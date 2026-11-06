@@ -1082,6 +1082,17 @@ const CropRecommendationSection = () => {
                                             <span className="bg-amber-500 text-slate-900 text-[10px] font-extrabold px-2 py-0.5 rounded-full uppercase tracking-wider">
                                                 ★ Top Pick
                                             </span>
+                                            {recommendations.recommendations[0]?.confidence_level && (
+                                                <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full border ${
+                                                    recommendations.recommendations[0]?.confidence_level.startsWith('High')
+                                                        ? 'bg-emerald-500/20 text-emerald-300 border-emerald-500/30'
+                                                        : recommendations.recommendations[0]?.confidence_level.startsWith('Moderate')
+                                                        ? 'bg-yellow-500/20 text-yellow-300 border-yellow-500/30'
+                                                        : 'bg-rose-500/20 text-rose-300 border-rose-500/30'
+                                                }`}>
+                                                    {recommendations.recommendations[0]?.confidence_level}
+                                                </span>
+                                            )}
                                         </div>
                                         <div className="flex items-center gap-3 mt-1.5 text-xs text-slate-400 font-medium">
                                             <p className="flex items-center gap-1">
@@ -1201,16 +1212,41 @@ const CropCard = ({ crop, rank }) => {
 
                 <div className="relative z-10">
                     {/* Crop Name */}
-                    <h3 className="text-xl font-bold text-white mb-3 flex items-center gap-2">
-                        <Sprout className="text-amber-400" size={20} />
-                        {crop.crop}
-                    </h3>
+                    <div className="mb-3">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-xl font-bold text-white flex items-center gap-2">
+                                <Sprout className="text-amber-400" size={20} />
+                                {crop.crop}
+                            </h3>
+                        </div>
+                        {/* Statistical Confidence Indicator */}
+                        <div className="mt-1.5 flex items-center gap-2">
+                            {crop.confidence_level?.startsWith('High') ? (
+                                <span className="text-[10px] font-semibold tracking-wide bg-emerald-500/20 text-emerald-300 border border-emerald-500/30 px-2 py-0.5 rounded-full">
+                                    High Confidence ({crop.sample_count} seasons)
+                                </span>
+                            ) : crop.confidence_level?.startsWith('Moderate') ? (
+                                <span className="text-[10px] font-semibold tracking-wide bg-yellow-500/20 text-yellow-300 border border-yellow-500/30 px-2 py-0.5 rounded-full">
+                                    Moderate Confidence ({crop.sample_count} seasons)
+                                </span>
+                            ) : (
+                                <span className="text-[10px] font-semibold tracking-wide bg-rose-500/20 text-rose-300 border border-rose-500/30 px-2 py-0.5 rounded-full flex items-center gap-1">
+                                    <span>⚠️</span> Limited Data ({crop.sample_count || 1} season{crop.sample_count > 1 ? 's' : ''})
+                                </span>
+                            )}
+                        </div>
+                    </div>
 
                     {/* Main Stats */}
                     <div className="space-y-3 mb-4">
                         <div className="bg-slate-800/50 rounded-lg p-3">
                             <p className="text-xs text-slate-400 mb-1">Average Yield</p>
                             <p className="text-2xl font-bold text-amber-400">{crop.avg_yield} <span className="text-sm text-slate-400">kg/ha</span></p>
+                            {crop.statistically_reliable === false && (
+                                <p className="text-[10px] text-amber-300/80 mt-1 italic">
+                                    Low observation sample; ranking score adjusted.
+                                </p>
+                            )}
                         </div>
 
                         <div className="grid grid-cols-2 gap-2">

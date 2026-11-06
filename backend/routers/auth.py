@@ -1,10 +1,14 @@
+import os
+import secrets
+import warnings
+from typing import Optional
+from datetime import datetime, timedelta
+
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 from fastapi.security import OAuth2PasswordBearer, OAuth2PasswordRequestForm
-from datetime import datetime, timedelta
 from jose import JWTError, jwt
 import bcrypt  # Use bcrypt directly
-from typing import Optional
 
 from .. import models, schemas, database
 
@@ -14,7 +18,48 @@ router = APIRouter(
 )
 
 # Configuration
-SECRET_KEY = "supersecretkey_change_this_In_production" # TODO: Move to .env
+INSECURE_SECRETS = {
+    "supersecretkey_change_this_In_production",
+    "your-secret-key-here",
+    "secret",
+    "changeme",
+    "placeholder_jwt_secret",
+    "123456",
+}
+
+def get_jwt_secret() -> str:
+    """
+    Retrieves and validates the JWT secret key from environment configuration.
+    Raises RuntimeError if starting in production with a missing or insecure key.
+    """
+    key = os.getenv("JWT_SECRET_KEY") or os.getenv("SECRET_KEY")
+    env = os.getenv("ENVIRONMENT", "development").lower()
+
+    if env == "production":
+        if not key:
+            raise RuntimeError(
+                "CRITICAL SECURITY ERROR: JWT_SECRET_KEY environment variable is not set. "
+                "The server will not start in production mode without a secure JWT secret."
+            )
+        if key in INSECURE_SECRETS or len(key) < 32:
+            raise RuntimeError(
+                "CRITICAL SECURITY ERROR: JWT_SECRET_KEY is using a weak or default placeholder "
+                "value (< 32 characters or known default). Please configure a strong, random "
+                "secret key (at least 32 characters) in production."
+            )
+        return key
+
+    # Development / Testing fallback
+    if not key or key in INSECURE_SECRETS:
+        warnings.warn(
+            "Security Notice: JWT_SECRET_KEY is not set or uses a placeholder in development. "
+            "Configure JWT_SECRET_KEY in your .env file for production security.",
+            UserWarning
+        )
+        return key or "agrinexus_dev_jwt_secret_key_32chars_min_length!!"
+    return key
+
+SECRET_KEY = get_jwt_secret()
 ALGORITHM = "HS256"
 ACCESS_TOKEN_EXPIRE_MINUTES = 1440 # 24 Hours
 
@@ -38,7 +83,8 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
     else:
         expire = datetime.utcnow() + timedelta(minutes=15)
     to_encode.update({"exp": expire})
-    encoded_jwt = jwt.encode(to_encode, SECRET_KEY, algorithm=ALGORITHM)
+    secret = get_jwt_secret()
+    encoded_jwt = jwt.encode(to_encode, secret, algorithm=ALGORITHM)
     return encoded_jwt
 
 def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(database.get_db)):
@@ -47,8 +93,9 @@ def get_current_user(token: str = Depends(oauth2_scheme), db: Session = Depends(
         detail="Could not validate credentials",
         headers={"WWW-Authenticate": "Bearer"},
     )
+    secret = get_jwt_secret()
     try:
-        payload = jwt.decode(token, SECRET_KEY, algorithms=[ALGORITHM])
+        payload = jwt.decode(token, secret, algorithms=[ALGORITHM])
         email: str = payload.get("sub")
         if email is None:
             raise credentials_exception

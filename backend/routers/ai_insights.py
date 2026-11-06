@@ -12,19 +12,24 @@ import os
 router = APIRouter(prefix="/ai", tags=["AI Insights"])
 
 # --- CONFIGURATION ---
-# TODO: PASTE YOUR GEMINI API KEY HERE or set it in environment variables
-# Example: os.environ["GEMINI_API_KEY"] = "AIzaSy..."
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyDzOsYbpMwL00gWOd5C0etbXk4pNl7wZFw")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "").strip()
 
-def configure_genai():
-    try:
-        genai.configure(api_key=GEMINI_API_KEY)
-    except Exception as e:
-        print(f"Error configuring Gemini: {e}")
+_gemini_model = None
 
-# Initialize
-configure_genai()
-model = genai.GenerativeModel('gemini-flash-latest')
+def get_gemini_model():
+    """Lazily configure and return the Gemini GenerativeModel if an API key is set."""
+    global _gemini_model
+    api_key = os.getenv("GEMINI_API_KEY", "").strip()
+    if not api_key or api_key in {"YOUR_GEMINI_API_KEY_HERE", "your_gemini_api_key_here", "None"}:
+        return None
+    if _gemini_model is None:
+        try:
+            genai.configure(api_key=api_key)
+            _gemini_model = genai.GenerativeModel('gemini-1.5-flash')
+        except Exception as e:
+            print(f"Warning: Failed to configure Gemini GenerativeModel: {e}")
+            return None
+    return _gemini_model
 
 class InsightRequest(BaseModel):
     district: str
@@ -83,11 +88,14 @@ async def generate_insight(request: InsightRequest):
                 except ValueError: pass
         except: pass
 
-    if GEMINI_API_KEY == "YOUR_GEMINI_API_KEY_HERE":
-        # Simulating streaming fallback
-        async def fake_stream():
-            yield "⚠️ API Key Missing. Please configure backend."
-        return StreamingResponse(fake_stream(), media_type="text/plain")
+    model = get_gemini_model()
+    if model is None:
+        async def key_missing_stream():
+            yield "⚠️ **Gemini API Key Not Configured**\n\n"
+            yield "To enable live AI agronomist intelligence, set `GEMINI_API_KEY` in your `.env` file:\n"
+            yield "```bash\nGEMINI_API_KEY=your_gemini_api_key_here\n```\n"
+            yield "Then restart the backend server."
+        return StreamingResponse(key_missing_stream(), media_type="text/plain")
     
     # 2. Construct Prompt (Markdown for Streaming Compatibility)
     prompt = (
@@ -116,6 +124,6 @@ async def generate_insight(request: InsightRequest):
                 if chunk.text:
                     yield chunk.text
         except Exception as e:
-            yield f"\n\n[Error: {str(e)}]"
+            yield f"\n\n[AI Generation Error: {str(e)}]"
 
     return StreamingResponse(stream_generator(), media_type="text/plain")

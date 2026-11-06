@@ -101,8 +101,11 @@ async def predict_advisory(request: QueryRequest):
             "recommended_action": action,
             "entities": entities
         }
-    except FileNotFoundError as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except FileNotFoundError:
+        raise HTTPException(
+            status_code=503,
+            detail="Advisory classification model not found. Please train the model using: python backend/ml/train_nlp_advisory.py"
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Prediction error: {str(e)}")
 
@@ -153,8 +156,11 @@ async def predict_sentiment(request: NewsRequest):
             "news_text": request.text,
             "predicted_sentiment": prediction
         }
-    except FileNotFoundError as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    except FileNotFoundError:
+        raise HTTPException(
+            status_code=503,
+            detail="Advisory classification model not found. Please train the model using: python backend/ml/train_nlp_advisory.py"
+        )
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Prediction error: {str(e)}")
 

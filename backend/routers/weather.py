@@ -23,19 +23,32 @@ async def get_weather(
         "forecast_days": 14
     }
 
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=10.0) as client:
         try:
             response = await client.get(url, params=params)
             response.raise_for_status()
-            return response.json()
+            data = response.json()
+            data["data_source"] = "live_open_meteo"
+            data["is_simulated"] = False
+            data["warning"] = None
+            return data
         except httpx.HTTPError as exc:
-            print(f"Open-Meteo API Error: {exc}. Using Mock Data.")
-            # Fallback Mock Data to prevent dashboard crash
-            return generate_mock_weather(latitude, longitude)
+            print(f"Open-Meteo API Error: {exc}. Providing explicitly marked simulated fallback.")
+            data = generate_mock_weather(latitude, longitude)
+            data["data_source"] = "simulated_fallback"
+            data["is_simulated"] = True
+            data["warning"] = (
+                f"Live Open-Meteo API unreachable ({type(exc).__name__}: {str(exc)}). "
+                "Displaying simulated fallback data for testing/demonstration purposes."
+            )
+            return data
 
 def generate_mock_weather(lat, lon):
     import random
     return {
+        "data_source": "simulated_fallback",
+        "is_simulated": True,
+        "warning": "Simulated meteorological values generated locally for offline preview.",
         "current": {
             "temperature_2m": round(25 + random.random() * 10, 1),
             "relative_humidity_2m": int(40 + random.random() * 40),

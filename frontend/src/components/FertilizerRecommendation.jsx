@@ -175,6 +175,7 @@ const FertilizerRecommendation = () => {
     const [recommendation, setRecommendation] = useState(null);
     const [error, setError] = useState(null);
     const [selectedDistrict, setSelectedDistrict] = useState('Coimbatore');
+    const [isWeatherSimulated, setIsWeatherSimulated] = useState(false);
 
     // Form State
     const [formData, setFormData] = useState({
@@ -213,6 +214,7 @@ const FertilizerRecommendation = () => {
                     params: { latitude: district.lat, longitude: district.lon }
                 });
                 if (weatherRes.data && weatherRes.data.current) {
+                    setIsWeatherSimulated(Boolean(weatherRes.data.is_simulated));
                     setFormData(prev => ({
                         ...prev,
                         temperature: weatherRes.data.current.temperature_2m,
@@ -382,6 +384,16 @@ const FertilizerRecommendation = () => {
                         </div>
 
                         {/* Environment Inputs - Interactive Cards */}
+                        {isWeatherSimulated && (
+                            <div className="mb-3 px-3 py-1.5 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-300/90 text-xs flex items-center justify-between">
+                                <span className="flex items-center gap-1.5">
+                                    <span>⚠️</span> Weather offline: ambient temperature & humidity populated from simulated fallback.
+                                </span>
+                                <span className="text-[10px] uppercase font-mono bg-amber-500/20 px-1.5 py-0.5 rounded border border-amber-500/30">
+                                    Simulated
+                                </span>
+                            </div>
+                        )}
                         <div className="grid grid-cols-3 gap-4">
                             {[
                                 {

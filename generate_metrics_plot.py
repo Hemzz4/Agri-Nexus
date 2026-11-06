@@ -61,7 +61,7 @@ try:
     
     # Save the figure
     plt.savefig('confusion_matrix_plot.png', dpi=300, bbox_inches='tight')
-    print("Success! Saved visualization as: e:\\AGRI-DASH\\confusion_matrix_plot.png")
+    print("Success! Saved visualization as: confusion_matrix_plot.png")
     
 except Exception as e:
     print(f"Error generating plot: {e}")

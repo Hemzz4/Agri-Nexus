@@ -1,7 +1,23 @@
+"""
+Synthetic Farmer Query Dataset Generator.
+Part of AgriNexus / Agri-Insight Framework.
+
+METHODOLOGICAL & SCIENTIFIC LIMITATIONS NOTICE:
+----------------------------------------------
+This script generates synthetic farmer queries across 7 operational categories
+using 21 sentence templates slotted with 9 crop names.
+Because 5,000 samples are generated from only 189 unique combinations:
+1. ~96.2% of rows are repeated duplicate queries.
+2. Random train/test splits lead to high data leakage, causing inflated evaluation scores.
+3. Real-world farmer queries feature varied syntax, dialectal phrasing, and spelling errors not present here.
+Use this dataset for functional integration testing only.
+"""
+
 import pandas as pd
 import random
+from pathlib import Path
 
-# Generate a robust English dataset for crop disease advisory
+# Generate a synthetic dataset for crop disease advisory
 templates = [
     ("My {crop} leaves are turning yellow and have brown spots.", "Disease"),
     ("I see white powdery mildew on the stem of my {crop}.", "Disease"),
@@ -42,5 +58,6 @@ for _ in range(5000):  # Generate 5000 rows
     data.append({"query": query, "category": category})
 
 df = pd.DataFrame(data)
-df.to_csv("backend/data/farmer_queries.csv", index=False)
-print("English dataset generated successfully!")
+out_path = Path(__file__).resolve().parent / "farmer_queries.csv"
+df.to_csv(out_path, index=False)
+print("English dataset generated successfully at", out_path)

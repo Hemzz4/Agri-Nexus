@@ -27,19 +27,44 @@ class SoilData(BaseModel):
 @router.get("/options")
 def get_options():
     try:
-        le_soil = joblib.load(SOIL_ENCODER_PATH)
-        le_crop = joblib.load(CROP_ENCODER_PATH)
+        if SOIL_ENCODER_PATH.exists() and CROP_ENCODER_PATH.exists():
+            le_soil = joblib.load(SOIL_ENCODER_PATH)
+            le_crop = joblib.load(CROP_ENCODER_PATH)
+            return {
+                "soil_types": list(le_soil.classes_),
+                "crop_types": list(le_crop.classes_)
+            }
+        # Fallback to dataset directly if encoders not trained yet
+        data_csv = Path(__file__).resolve().parent.parent / "data" / "fertilizer.csv"
+        if data_csv.exists():
+            df_temp = pd.read_csv(data_csv)
+            soil_col = "Soil Type" if "Soil Type" in df_temp.columns else "Soil_Type"
+            crop_col = "Crop Type" if "Crop Type" in df_temp.columns else "Crop_Type"
+            return {
+                "soil_types": sorted(df_temp[soil_col].dropna().unique().tolist()),
+                "crop_types": sorted(df_temp[crop_col].dropna().unique().tolist())
+            }
         return {
-            "soil_types": list(le_soil.classes_),
-            "crop_types": list(le_crop.classes_)
+            "soil_types": ["Black", "Clayey", "Loamy", "Red", "Sandy"],
+            "crop_types": ["Barley", "Cotton", "Ground Nuts", "Maize", "Millets", "Oil seeds", "Paddy", "Pulses", "Sugarcane", "Tobacco", "Wheat"]
         }
     except Exception as e:
-        return {"error": "Model files not found. Please train the model first.", "details": str(e)}
+        return {
+            "error": "Model files not found. Please train the model first using python backend/ml/train_fertilizer.py",
+            "details": str(e),
+            "soil_types": ["Black", "Clayey", "Loamy", "Red", "Sandy"],
+            "crop_types": ["Barley", "Cotton", "Ground Nuts", "Maize", "Millets", "Oil seeds", "Paddy", "Pulses", "Sugarcane", "Tobacco", "Wheat"]
+        }
 
 @router.post("/predict")
 def recommend_fertilizer(data: SoilData):
-    if not MODEL_PATH.exists():
-         raise HTTPException(status_code=500, detail="Model not trained yet.")
+    required_artifacts = [MODEL_PATH, SOIL_ENCODER_PATH, CROP_ENCODER_PATH, FERT_ENCODER_PATH]
+    missing = [str(p.name) for p in required_artifacts if not p.exists()]
+    if missing:
+        raise HTTPException(
+            status_code=503,
+            detail=f"Fertilizer model artifacts missing ({', '.join(missing)}). Please train the model using: python backend/ml/train_fertilizer.py"
+        )
 
     try:
         # Load artifacts

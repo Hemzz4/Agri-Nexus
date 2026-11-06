@@ -1,3 +1,20 @@
+import os
+os.environ.setdefault("OPENBLAS_NUM_THREADS", "1")
+os.environ.setdefault("MKL_NUM_THREADS", "1")
+os.environ.setdefault("OMP_NUM_THREADS", "1")
+os.environ.setdefault("NUMEXPR_NUM_THREADS", "1")
+
+from pathlib import Path
+from dotenv import load_dotenv
+
+# Load environment variables from .env file if present
+BASE_DIR = Path(__file__).resolve().parent.parent
+env_file = BASE_DIR / ".env"
+if env_file.exists():
+    load_dotenv(env_file)
+else:
+    load_dotenv()
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from backend.routers import prediction, auth
@@ -5,6 +22,11 @@ from backend.routers import weather, analytics, climate_prediction, crop_recomme
 from backend import models, database
 
 app = FastAPI(title="Agri-Insight API", version="1.0.0")
+
+# Validate JWT Secret configuration on startup
+@app.on_event("startup")
+async def validate_environment():
+    auth.get_jwt_secret()
 
 # Create Database Tables
 models.Base.metadata.create_all(bind=database.engine)

@@ -1,11 +1,11 @@
+from pathlib import Path
 import pandas as pd
-import os
 
-path = "e:/AGRI-DASH/backend/data/Final_Model_Ready_Dataset.csv"
+path = Path(__file__).resolve().parent / "backend" / "data" / "Final_Model_Ready_Dataset.csv"
 print(f"Checking path: {path}")
 
-if not os.path.exists(path):
-    print("ERROR: File does not exist at absolute path.")
+if not path.exists():
+    print("ERROR: File does not exist at path.")
 else:
     print("File exists. Attempting to read...")
     try:

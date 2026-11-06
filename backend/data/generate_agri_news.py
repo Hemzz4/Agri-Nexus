@@ -1,7 +1,23 @@
+"""
+Synthetic Agricultural News Sentiment Dataset Generator.
+Part of AgriNexus / Agri-Insight Framework.
+
+METHODOLOGICAL & SCIENTIFIC LIMITATIONS NOTICE:
+----------------------------------------------
+This script generates synthetic headlines using ~44 seed templates slotted with 13 crop names.
+Because it produces 6,000 samples from ~570 unique combinations:
+1. ~91.3% of rows are verbatim duplicates.
+2. Standard random splits cause identical headlines to appear in both training and test sets.
+3. High model accuracy scores on raw splits reflect template memorization rather than real-world news generalization.
+This dataset is intended strictly for offline prototyping, pipeline verification, and demonstration.
+Do not claim leakage-free real-world performance without out-of-template or deduplicated evaluation.
+"""
+
 import pandas as pd
 import random
+from pathlib import Path
 
-# Diverse, realistic agricultural news sentiment dataset generator
+# Diverse agricultural news sentiment templates
 templates = [
     # Positive News
     ("Monsoon rains boost {crop} crop yields across the country.", "Positive"),
@@ -67,5 +83,6 @@ for _ in range(6000):
     data.append({"headline": headline, "sentiment": sentiment})
 
 df = pd.DataFrame(data)
-df.to_csv("backend/data/agri_news.csv", index=False)
-print("Agricultural News dataset generated successfully with", len(df), "records!")
+out_path = Path(__file__).resolve().parent / "agri_news.csv"
+df.to_csv(out_path, index=False)
+print("Agricultural News dataset generated successfully at", out_path, "with", len(df), "records!")

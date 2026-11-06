@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Sun, ChevronDown, Thermometer, Droplets, CloudRain } from 'lucide-react';
+import { Sun, ChevronDown, Thermometer, Droplets, CloudRain, AlertTriangle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { fetchWeather } from '../../api';
 import WeatherDetailedGrid from '../WeatherDetailedGrid';
@@ -74,6 +74,22 @@ const LiveWeatherSection = () => {
                         <span className="text-lg text-gray-300">{district}</span>
                     </div>
                 </div>
+
+                {weatherData?.is_simulated && (
+                    <div className="mb-6 p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 flex items-start gap-3">
+                        <AlertTriangle className="text-amber-400 shrink-0 mt-0.5" size={20} />
+                        <div>
+                            <p className="text-amber-300 font-semibold text-sm">Simulated Weather Data Active</p>
+                            <p className="text-amber-200/80 text-xs mt-0.5">
+                                {weatherData.warning || "Live Open-Meteo API connection is currently unavailable. Displaying locally simulated estimates for testing and visualization."}
+                            </p>
+                        </div>
+                        <span className="ml-auto text-[10px] font-mono uppercase bg-amber-500/20 text-amber-300 px-2 py-1 rounded-md border border-amber-500/30 shrink-0">
+                            SIMULATED
+                        </span>
+                    </div>
+                )}
+
                 {loadingWeather ? (
                     <div className="flex items-center justify-center py-12">
                         <div className="animate-spin h-8 w-8 border-2 border-emerald-500 rounded-full border-t-transparent"></div>

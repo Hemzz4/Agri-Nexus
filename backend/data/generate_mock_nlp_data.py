@@ -1,3 +1,12 @@
+"""
+Mock NLP Dataset Generator (Prototyping Baseline).
+Part of AgriNexus / Agri-Insight Framework.
+
+METHODOLOGICAL NOTICE:
+This script duplicates 15 basic seed questions and headlines 10 times to form a small mock dataset.
+It is intended for quick smoke tests and offline environment bootstrapping.
+"""
+
 import pandas as pd
 import os
 

@@ -1,5 +1,10 @@
 import sys
-sys.path.insert(0, 'e:/AGRI-DASH')
+from pathlib import Path
+
+# Add project root to sys.path portably
+project_root = Path(__file__).resolve().parent
+if str(project_root) not in sys.path:
+    sys.path.insert(0, str(project_root))
 
 from backend.routers.crop_recommendations import router
 from fastapi import FastAPI

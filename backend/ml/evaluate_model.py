@@ -1,7 +1,10 @@
 
+import os
+from pathlib import Path
 import pandas as pd
 import numpy as np
-import os
+import matplotlib
+matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.model_selection import train_test_split
@@ -10,10 +13,10 @@ from sklearn.compose import ColumnTransformer
 from sklearn.pipeline import Pipeline
 from sklearn.ensemble import RandomForestRegressor
 from sklearn.metrics import confusion_matrix, classification_report, accuracy_score
-# Configuration matches train_model.py
-# Using local relative path since we know where the file is in the workspace
-DATASET_PATH = os.path.join(os.path.dirname(__file__), "../data/Final_Model_Ready_Dataset.csv")
-OUTPUT_IMAGE_PATH = os.path.join(os.path.dirname(__file__), "confusion_matrix_yield.png")
+
+BASE_DIR = Path(__file__).resolve().parent.parent
+DATASET_PATH = BASE_DIR / "data" / "Final_Model_Ready_Dataset.csv"
+OUTPUT_IMAGE_PATH = Path(__file__).resolve().parent / "confusion_matrix_yield.png"
 
 def train_and_evaluate():
     print(f"Loading dataset from {DATASET_PATH}...")
@@ -101,9 +104,10 @@ def train_and_evaluate():
     plt.xlabel('Predicted Yield')
     plt.ylabel('Actual Yield')
     plt.title('Confusion Matrix: Actual vs Predicted Yield Categories')
-    plt.show()
     print(f"Saving confusion matrix to {OUTPUT_IMAGE_PATH}...")
-    plt.savefig(OUTPUT_IMAGE_PATH)
+    plt.tight_layout()
+    plt.savefig(OUTPUT_IMAGE_PATH, dpi=300)
+    plt.close()
     print("Done!")
 
     # Print classification report

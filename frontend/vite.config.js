@@ -4,4 +4,20 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  resolve: {
+    alias: [
+      { find: /^plotly\.js\/dist\/plotly$/, replacement: 'plotly.js-dist-min' },
+      { find: /^plotly\.js$/, replacement: 'plotly.js-dist-min' }
+    ]
+  },
+  build: {
+    chunkSizeWarningLimit: 3000,
+    rollupOptions: {
+      output: {
+        manualChunks: {
+          plotly: ['plotly.js-dist-min']
+        }
+      }
+    }
+  }
 })

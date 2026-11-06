@@ -53,6 +53,7 @@ build/
 .env.test.local
 .env.production.local
 .env.*
+!.env.example
 
 # Machine Learning / Data Science
 *.joblib
@@ -66,6 +67,12 @@ build/
 *.db
 *.sqlite
 *.sqlite3
+
+# Archives
+*.zip
+*.tar.gz
+*.tgz
+*.rar
 
 # Operating System Files
 .DS_Store
