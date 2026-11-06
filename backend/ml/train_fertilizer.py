@@ -92,7 +92,7 @@ def train_fertilizer_model(data_path: Path, model_dir: Path):
 
     # Save artifacts
     print(f"Saving artifacts to {resolved_model_dir}...")
-    joblib.dump(model, model_path)
+    joblib.dump(model, model_path, compress=3)
     joblib.dump(le_soil, soil_enc_path)
     joblib.dump(le_crop, crop_enc_path)
     joblib.dump(le_fert, fert_enc_path)

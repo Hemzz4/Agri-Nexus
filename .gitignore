@@ -63,6 +63,16 @@ build/
 *.pb
 .ipynb_checkpoints/
 
+# Explicitly track required trained model artifacts
+!backend/ml/yield_model.joblib
+!backend/ml/weather_model.joblib
+!backend/ml/nlp_advisory_model.joblib
+!backend/ml/nlp_sentiment_model.joblib
+!backend/ml/models/fertilizer_model.pkl
+!backend/ml/models/soil_encoder.pkl
+!backend/ml/models/crop_encoder.pkl
+!backend/ml/models/fertilizer_encoder.pkl
+
 # Databases
 *.db
 *.sqlite

@@ -118,9 +118,9 @@ def train_yield_model(df: pd.DataFrame, output_path: Path):
     print(f"  - MAE:  {mae:.4f}")
     print(f"  - R²:   {r2:.4f}")
 
-    # 7. Save Artifact
+    # 7. Save Artifact (with compression for git portability)
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    joblib.dump(model_pipeline, output_path)
+    joblib.dump(model_pipeline, output_path, compress=3)
     print(f"Yield model successfully saved to: {output_path}")
 
 
@@ -179,7 +179,7 @@ def train_weather_model(df: pd.DataFrame, output_path: Path):
         print(f"  * {col:<15}: RMSE={col_rmse:.4f}, R²={col_r2:.4f}")
 
     output_path.parent.mkdir(parents=True, exist_ok=True)
-    joblib.dump(model, output_path)
+    joblib.dump(model, output_path, compress=3)
     print(f"Weather model successfully saved to: {output_path}")
 
 
